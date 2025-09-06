@@ -2,6 +2,25 @@
 
 Sistema de Punto de Venta diseñado específicamente para vendedores de libros en comercio informal callejero.
 
+## 🚀 Inicio Rápido
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/SkyTotix/Proyectini.git
+cd Proyectini
+
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Ejecutar la aplicación
+python run.py
+```
+
+O directamente:
+```bash
+streamlit run src/app.py
+```
+
 ## 🎯 Características Principales
 
 - ✅ **Base de datos local** - SQLite (no requiere servidor)
