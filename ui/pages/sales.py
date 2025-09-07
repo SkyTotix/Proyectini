@@ -187,6 +187,9 @@ def show_new_sale():
                 # Calcular totales
                 subtotal = sum(item['subtotal'] for item in st.session_state.cart)
                 
+                # Debug: mostrar valores
+                st.write(f"🔍 Debug - Tipo: {discount_type}, Descuento: {discount}, Fijo: {fixed_discount}")
+                
                 if use_real_price:
                     # Usar precio real de venta
                     total_amount = real_total
