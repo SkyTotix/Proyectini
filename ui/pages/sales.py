@@ -190,9 +190,7 @@ def show_new_sale():
                 # Calcular totales
                 subtotal = sum(item['subtotal'] for item in st.session_state.cart)
                 
-                # Debug: mostrar valores
-                st.info(f"🔍 **Debug:** Tipo: '{discount_type}' | Descuento: {discount}% | Fijo: ${fixed_discount}")
-                
+                # Calcular descuentos y totales
                 if use_real_price:
                     # Usar precio real de venta
                     total_amount = real_total
@@ -200,16 +198,16 @@ def show_new_sale():
                     tax_amount = 0  # No aplicar impuestos adicionales si usamos precio real
                 else:
                     # Cálculo normal con descuentos
+                    # IMPORTANTE: Verificar el tipo de descuento seleccionado
                     if discount_type == "Porcentaje (%)":
                         discount_amount = subtotal * (discount / 100)
-                    else:
+                    elif discount_type == "Cantidad fija ($)":
                         discount_amount = fixed_discount  # Descuento fijo en pesos
+                    else:
+                        discount_amount = 0  # Por seguridad
                     
                     tax_amount = (subtotal - discount_amount) * (tax / 100)
                     total_amount = subtotal - discount_amount + tax_amount
-                
-                # Debug adicional para ver los cálculos
-                st.warning(f"🔍 **Cálculos:** Subtotal: ${subtotal:.2f} | Descuento aplicado: ${discount_amount:.2f} | Total final: ${total_amount:.2f}")
                 
                 st.markdown("#### 📋 Resumen:")
                 st.write(f"Subtotal: ${subtotal:.2f}")
@@ -229,6 +227,16 @@ def show_new_sale():
                 
                 if st.form_submit_button("🎯 Completar Venta", use_container_width=True):
                     try:
+                        # Debug: Mostrar valores antes de guardar
+                        st.info(f"""
+                        🔍 **Valores a guardar:**
+                        - Tipo descuento: {discount_type}
+                        - Descuento %: {discount}
+                        - Descuento fijo: ${fixed_discount}
+                        - Descuento aplicado: ${discount_amount:.2f}
+                        - Total: ${total_amount:.2f}
+                        """)
+                        
                         # Crear la venta en la base de datos
                         sale_notes = notes if notes else ""
                         if use_real_price and real_total < subtotal:
