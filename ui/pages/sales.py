@@ -158,12 +158,14 @@ def show_new_sale():
                     horizontal=True
                 )
                 
+                # Inicializar variables
+                discount = 0.0
+                fixed_discount = 0.0
+                
                 if discount_type == "Porcentaje (%)":
                     discount = st.number_input("Descuento (%)", min_value=0.0, max_value=100.0, value=0.0)
-                    fixed_discount = 0  # No se usará descuento fijo
                 else:
                     fixed_discount = st.number_input("Descuento en pesos ($)", min_value=0.0, value=0.0)
-                    discount = 0  # No se usará porcentaje
                 
                 # Opción de precio real de venta
                 st.markdown("#### 🎯 Precio Real de Venta")
@@ -188,7 +190,7 @@ def show_new_sale():
                 subtotal = sum(item['subtotal'] for item in st.session_state.cart)
                 
                 # Debug: mostrar valores
-                st.write(f"🔍 Debug - Tipo: {discount_type}, Descuento: {discount}, Fijo: {fixed_discount}")
+                st.info(f"🔍 **Debug:** Tipo: '{discount_type}' | Descuento: {discount}% | Fijo: ${fixed_discount}")
                 
                 if use_real_price:
                     # Usar precio real de venta
