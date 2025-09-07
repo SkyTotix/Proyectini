@@ -60,7 +60,7 @@ def show_add_book_form():
         
         with col2:
             publication_year = st.number_input("Año de Publicación", min_value=1000, max_value=2024, value=2020)
-            purchase_price = st.number_input("Precio de Compra *", min_value=0.0, format="%.2f")
+            purchase_price = st.number_input("Precio de Compra (opcional)", min_value=0.0, format="%.2f", help="Puedes dejarlo en 0 si no conoces el precio de compra")
             sale_price = st.number_input("Precio de Venta *", min_value=0.0, format="%.2f")
             stock_quantity = st.number_input("Cantidad en Stock *", min_value=0, value=1)
             min_stock = st.number_input("Stock Mínimo", min_value=0, value=5)
@@ -71,23 +71,31 @@ def show_add_book_form():
         description = st.text_area("Descripción", placeholder="Descripción opcional del libro...")
         
         # Mostrar cálculos automáticos
-        if purchase_price > 0 and sale_price > 0:
-            profit = sale_price - purchase_price
-            margin = (profit / purchase_price) * 100 if purchase_price > 0 else 0
+        if sale_price > 0:
             total_value = sale_price * stock_quantity
             
-            col_calc1, col_calc2, col_calc3 = st.columns(3)
-            with col_calc1:
-                st.metric("💰 Ganancia por unidad", f"${profit:.2f}")
-            with col_calc2:
-                st.metric("📈 Margen de ganancia", f"{margin:.1f}%")
-            with col_calc3:
-                st.metric("💎 Valor total stock", f"${total_value:.2f}")
+            if purchase_price > 0:
+                profit = sale_price - purchase_price
+                margin = (profit / purchase_price) * 100
+                
+                col_calc1, col_calc2, col_calc3 = st.columns(3)
+                with col_calc1:
+                    st.metric("💰 Ganancia por unidad", f"${profit:.2f}")
+                with col_calc2:
+                    st.metric("📈 Margen de ganancia", f"{margin:.1f}%")
+                with col_calc3:
+                    st.metric("💎 Valor total stock", f"${total_value:.2f}")
+            else:
+                col_calc1, col_calc2 = st.columns(2)
+                with col_calc1:
+                    st.metric("💎 Valor total stock", f"${total_value:.2f}")
+                with col_calc2:
+                    st.info("💡 Agrega precio de compra para ver ganancia y margen")
         
         submitted = st.form_submit_button("➕ Agregar Libro", use_container_width=True)
         
         if submitted:
-            if title and author and purchase_price > 0 and sale_price > 0:
+            if title and author and sale_price > 0:
                 try:
                     # Crear objeto Book
                     book = Book(
@@ -131,7 +139,7 @@ def show_add_book_form():
                 except Exception as e:
                     st.error(f"❌ Error al agregar libro: {str(e)}")
             else:
-                st.error("❌ Por favor completa todos los campos obligatorios (marcados con *)")
+                st.error("❌ Por favor completa los campos obligatorios: Título, Autor y Precio de Venta")
 
 def show_books_list():
     """Muestra la lista de libros con filtros"""
