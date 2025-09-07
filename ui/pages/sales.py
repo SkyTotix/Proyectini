@@ -151,34 +151,31 @@ def show_new_sale():
                 
                 st.markdown("#### 💰 Ajustes de Precio")
                 
-                # Opción de descuento flexible con un solo campo
-                col_desc1, col_desc2 = st.columns(2)
+                # Opción de descuento flexible
+                discount_type = st.selectbox(
+                    "Tipo de descuento:",
+                    ["Sin descuento", "Porcentaje (%)", "Cantidad fija ($)"],
+                    key="discount_type_select"
+                )
                 
-                with col_desc1:
-                    discount_type = st.selectbox(
-                        "Tipo de descuento:",
-                        ["Sin descuento", "Porcentaje (%)", "Cantidad fija ($)"],
-                        key="discount_type_select"
+                # Mostrar campo de descuento según el tipo seleccionado
+                if discount_type == "Porcentaje (%)":
+                    discount_value = st.number_input(
+                        "Descuento (%)", 
+                        min_value=0.0, 
+                        max_value=100.0, 
+                        value=0.0, 
+                        key="percent_disc"
                     )
-                
-                with col_desc2:
-                    if discount_type == "Porcentaje (%)":
-                        discount_value = st.number_input(
-                            "Descuento (%)", 
-                            min_value=0.0, 
-                            max_value=100.0, 
-                            value=0.0, 
-                            key="discount_input"
-                        )
-                    elif discount_type == "Cantidad fija ($)":
-                        discount_value = st.number_input(
-                            "Descuento ($)", 
-                            min_value=0.0, 
-                            value=0.0, 
-                            key="discount_input"
-                        )
-                    else:
-                        discount_value = 0.0
+                elif discount_type == "Cantidad fija ($)":
+                    discount_value = st.number_input(
+                        "Descuento en pesos ($)", 
+                        min_value=0.0, 
+                        value=0.0, 
+                        key="fixed_disc"
+                    )
+                else:
+                    discount_value = 0.0
                 
                 # Opción de precio real de venta
                 st.markdown("#### 🎯 Precio Real de Venta")
