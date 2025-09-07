@@ -14,13 +14,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 from database.db_manager import db_manager
 
 def show_dashboard():
-    """Muestra el dashboard principal"""
+    """Muestra el dashboard principal minimalista"""
     
-    st.header("🏠 Dashboard Principal")
-    st.markdown("---")
-    
-    # Métricas principales
-    col1, col2, col3, col4 = st.columns(4)
+    # Header simple y elegante
+    st.markdown('<h2 style="text-align: center; color: #2c3e50; font-weight: 300; margin-bottom: 2rem;">Dashboard</h2>', unsafe_allow_html=True)
     
     # Obtener datos para métricas
     all_books = db_manager.execute_query("SELECT * FROM books")
@@ -36,22 +33,46 @@ def show_dashboard():
     ''', (today,))
     today_revenue = sum(sale['total_amount'] for sale in today_sales)
     
+    # Métricas principales en cards minimalistas
+    col1, col2, col3, col4 = st.columns(4)
+    
     with col1:
-        st.metric("📚 Total Libros", total_books)
+        st.markdown(f"""
+        <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e9ecef; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+            <h3 style="color: #3498db; margin: 0; font-size: 2rem; font-weight: 300;">{total_books}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0 0; font-size: 0.9rem;">Total Libros</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
-        st.metric("📦 Stock Total", total_stock)
+        st.markdown(f"""
+        <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e9ecef; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+            <h3 style="color: #27ae60; margin: 0; font-size: 2rem; font-weight: 300;">{total_stock}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0 0; font-size: 0.9rem;">Stock Total</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col3:
-        st.metric("⚠️ Stock Bajo", len(low_stock_books))
+        color = "#e74c3c" if len(low_stock_books) > 0 else "#27ae60"
+        st.markdown(f"""
+        <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e9ecef; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+            <h3 style="color: {color}; margin: 0; font-size: 2rem; font-weight: 300;">{len(low_stock_books)}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0 0; font-size: 0.9rem;">Stock Bajo</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col4:
-        st.metric("💰 Ventas Hoy", f"${today_revenue:,.2f}")
+        st.markdown(f"""
+        <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e9ecef; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+            <h3 style="color: #f39c12; margin: 0; font-size: 2rem; font-weight: 300;">${today_revenue:,.0f}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0 0; font-size: 0.9rem;">Ventas Hoy</p>
+        </div>
+        """, unsafe_allow_html=True)
     
-    st.divider()
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    # Sección de acciones rápidas
-    st.subheader("🚀 Acciones Rápidas")
+    # Acciones rápidas minimalistas
+    st.markdown('<h3 style="color: #2c3e50; font-weight: 400; margin-bottom: 1.5rem;">Acciones Rápidas</h3>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     

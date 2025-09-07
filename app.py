@@ -17,35 +17,120 @@ from config import get_app_config, STREAMLIT_CONFIG
 # Configurar Streamlit al inicio (debe ser lo primero)
 st.set_page_config(**STREAMLIT_CONFIG)
 
-# CSS personalizado
+# CSS minimalista y elegante
 st.markdown("""
 <style>
+    /* Variables de colores minimalistas */
+    :root {
+        --primary: #2c3e50;
+        --secondary: #3498db;
+        --accent: #e74c3c;
+        --light: #f8f9fa;
+        --gray: #6c757d;
+        --success: #27ae60;
+        --warning: #f39c12;
+        --border: #e9ecef;
+    }
+
+    /* Header principal minimalista */
     .main-header {
+        font-size: 2.2rem;
+        color: var(--primary);
         text-align: center;
-        color: #2E8B57;
-        font-size: 2.5rem;
-        margin-bottom: 2rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 3rem;
+        font-weight: 300;
+        letter-spacing: 2px;
     }
-    .metric-card {
-        background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 10px;
-        border-left: 5px solid #2E8B57;
-        margin: 0.5rem 0;
-    }
+
+    /* Sidebar limpio */
     .sidebar-header {
-        color: #2E8B57;
-        font-weight: bold;
-        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
     }
-    .success-message {
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
-        padding: 0.75rem 1rem;
-        border-radius: 0.375rem;
-        margin: 1rem 0;
+
+    /* Métricas minimalistas */
+    .metric-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 0.75rem 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+
+    /* Botones elegantes */
+    .stButton > button {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--primary);
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        min-height: 3rem;
+    }
+
+    .stButton > button:hover {
+        background: var(--light);
+        border-color: var(--secondary);
+        color: var(--secondary);
+        box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+    }
+
+    /* Selectbox limpio */
+    .stSelectbox > div > div {
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+
+    /* Ocultar elementos innecesarios para look más limpio */
+    .stDeployButton { display: none; }
+    #MainMenu { visibility: hidden; }
+    .stDecoration { display: none; }
+    footer { visibility: hidden; }
+
+    /* Espaciado optimizado */
+    .block-container {
+        padding-top: 2rem;
+        max-width: 1200px;
+    }
+
+    /* Cards informativos */
+    .info-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 1.25rem;
+        color: white;
+        text-align: center;
+        margin: 0.5rem 0;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .success-card {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: 12px;
+        padding: 1.25rem;
+        color: white;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
+    }
+
+    /* Divisores más sutiles */
+    hr {
+        border: none;
+        height: 1px;
+        background: var(--border);
+        margin: 2rem 0;
     }
 </style>
 """, unsafe_allow_html=True)
