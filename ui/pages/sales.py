@@ -149,28 +149,82 @@ def show_new_sale():
                 payment_method = st.selectbox("Método de Pago", 
                     ["Efectivo", "Tarjeta", "Transferencia", "Otro"])
                 
-                discount = st.number_input("Descuento (%)", min_value=0.0, max_value=100.0, value=0.0)
-                tax = st.number_input("Impuesto (%)", min_value=0.0, max_value=100.0, value=16.0)
+                st.markdown("#### 💰 Ajustes de Precio")
+                
+                # Opción de descuento flexible
+                discount_type = st.radio(
+                    "Tipo de descuento:",
+                    ["Porcentaje (%)", "Cantidad fija ($)"],
+                    horizontal=True
+                )
+                
+                if discount_type == "Porcentaje (%)":
+                    discount = st.number_input("Descuento (%)", min_value=0.0, max_value=100.0, value=0.0)
+                    discount_amount = 0  # Se calculará después
+                else:
+                    discount_amount = st.number_input("Descuento en pesos ($)", min_value=0.0, value=0.0)
+                    discount = 0  # No se usará porcentaje
+                
+                # Opción de precio real de venta
+                st.markdown("#### 🎯 Precio Real de Venta")
+                use_real_price = st.checkbox("Usar precio real de venta (para descuentos informales)")
+                
+                if use_real_price:
+                    st.info("💡 Puedes ajustar el precio final considerando descuentos informales")
+                    real_total = st.number_input(
+                        "Precio real a cobrar ($)", 
+                        min_value=0.0, 
+                        value=sum(item['subtotal'] for item in st.session_state.cart),
+                        help="Precio final que realmente vas a cobrar al cliente"
+                    )
+                else:
+                    real_total = sum(item['subtotal'] for item in st.session_state.cart)
+                
+                tax = st.number_input("Impuesto (%)", min_value=0.0, max_value=100.0, value=0.0)
                 
                 notes = st.text_area("Notas adicionales")
                 
                 # Calcular totales
                 subtotal = sum(item['subtotal'] for item in st.session_state.cart)
-                discount_amount = subtotal * (discount / 100)
-                tax_amount = (subtotal - discount_amount) * (tax / 100)
-                total_amount = subtotal - discount_amount + tax_amount
+                
+                if use_real_price:
+                    # Usar precio real de venta
+                    total_amount = real_total
+                    discount_amount = subtotal - real_total if real_total < subtotal else 0
+                    tax_amount = 0  # No aplicar impuestos adicionales si usamos precio real
+                else:
+                    # Cálculo normal con descuentos
+                    if discount_type == "Porcentaje (%)":
+                        discount_amount = subtotal * (discount / 100)
+                    else:
+                        discount_amount = discount_amount  # Ya está en pesos
+                    
+                    tax_amount = (subtotal - discount_amount) * (tax / 100)
+                    total_amount = subtotal - discount_amount + tax_amount
                 
                 st.markdown("#### 📋 Resumen:")
                 st.write(f"Subtotal: ${subtotal:.2f}")
-                if discount > 0:
-                    st.write(f"Descuento ({discount}%): -${discount_amount:.2f}")
-                if tax > 0:
-                    st.write(f"Impuesto ({tax}%): +${tax_amount:.2f}")
-                st.write(f"**Total: ${total_amount:.2f}**")
+                
+                if use_real_price:
+                    if real_total < subtotal:
+                        st.write(f"Descuento informal: -${discount_amount:.2f}")
+                    st.write(f"**Precio real a cobrar: ${total_amount:.2f}**")
+                else:
+                    if discount_type == "Porcentaje (%)" and discount > 0:
+                        st.write(f"Descuento ({discount}%): -${discount_amount:.2f}")
+                    elif discount_type == "Cantidad fija ($)" and discount_amount > 0:
+                        st.write(f"Descuento: -${discount_amount:.2f}")
+                    if tax > 0:
+                        st.write(f"Impuesto ({tax}%): +${tax_amount:.2f}")
+                    st.write(f"**Total: ${total_amount:.2f}**")
                 
                 if st.form_submit_button("🎯 Completar Venta", use_container_width=True):
                     try:
                         # Crear la venta en la base de datos
+                        sale_notes = notes if notes else ""
+                        if use_real_price and real_total < subtotal:
+                            sale_notes += f" | Precio real: ${real_total:.2f} (Descuento informal: ${discount_amount:.2f})"
+                        
                         sale_id = db_manager.execute_update('''
                             INSERT INTO sales (total_amount, payment_method, customer_name,
                                              customer_phone, discount, tax, notes)
@@ -178,7 +232,7 @@ def show_new_sale():
                         ''', (
                             total_amount, payment_method, customer_name if customer_name else None,
                             customer_phone if customer_phone else None, discount_amount, tax_amount,
-                            notes if notes else None
+                            sale_notes
                         ))
                         
                         # Agregar items de la venta
