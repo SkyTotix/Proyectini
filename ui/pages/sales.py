@@ -155,7 +155,8 @@ def show_new_sale():
                 discount_type = st.radio(
                     "Tipo de descuento:",
                     ["Porcentaje (%)", "Cantidad fija ($)"],
-                    horizontal=True
+                    horizontal=True,
+                    key="discount_type_radio"
                 )
                 
                 # Inicializar variables
@@ -163,9 +164,9 @@ def show_new_sale():
                 fixed_discount = 0.0
                 
                 if discount_type == "Porcentaje (%)":
-                    discount = st.number_input("Descuento (%)", min_value=0.0, max_value=100.0, value=0.0)
+                    discount = st.number_input("Descuento (%)", min_value=0.0, max_value=100.0, value=0.0, key="percent_discount")
                 else:
-                    fixed_discount = st.number_input("Descuento en pesos ($)", min_value=0.0, value=0.0)
+                    fixed_discount = st.number_input("Descuento en pesos ($)", min_value=0.0, value=0.0, key="fixed_discount")
                 
                 # Opción de precio real de venta
                 st.markdown("#### 🎯 Precio Real de Venta")
