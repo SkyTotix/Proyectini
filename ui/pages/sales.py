@@ -151,22 +151,34 @@ def show_new_sale():
                 
                 st.markdown("#### 💰 Ajustes de Precio")
                 
-                # Opción de descuento flexible
-                discount_type = st.radio(
-                    "Tipo de descuento:",
-                    ["Porcentaje (%)", "Cantidad fija ($)"],
-                    horizontal=True,
-                    key="discount_type_radio"
-                )
+                # Opción de descuento flexible con un solo campo
+                col_desc1, col_desc2 = st.columns(2)
                 
-                # Inicializar variables
-                discount = 0.0
-                fixed_discount = 0.0
+                with col_desc1:
+                    discount_type = st.selectbox(
+                        "Tipo de descuento:",
+                        ["Sin descuento", "Porcentaje (%)", "Cantidad fija ($)"],
+                        key="discount_type_select"
+                    )
                 
-                if discount_type == "Porcentaje (%)":
-                    discount = st.number_input("Descuento (%)", min_value=0.0, max_value=100.0, value=0.0, key="percent_discount")
-                else:
-                    fixed_discount = st.number_input("Descuento en pesos ($)", min_value=0.0, value=0.0, key="fixed_discount")
+                with col_desc2:
+                    if discount_type == "Porcentaje (%)":
+                        discount_value = st.number_input(
+                            "Descuento (%)", 
+                            min_value=0.0, 
+                            max_value=100.0, 
+                            value=0.0, 
+                            key="discount_input"
+                        )
+                    elif discount_type == "Cantidad fija ($)":
+                        discount_value = st.number_input(
+                            "Descuento ($)", 
+                            min_value=0.0, 
+                            value=0.0, 
+                            key="discount_input"
+                        )
+                    else:
+                        discount_value = 0.0
                 
                 # Opción de precio real de venta
                 st.markdown("#### 🎯 Precio Real de Venta")
@@ -198,13 +210,14 @@ def show_new_sale():
                     tax_amount = 0  # No aplicar impuestos adicionales si usamos precio real
                 else:
                     # Cálculo normal con descuentos
-                    # IMPORTANTE: Verificar el tipo de descuento seleccionado
-                    if discount_type == "Porcentaje (%)":
-                        discount_amount = subtotal * (discount / 100)
+                    if discount_type == "Sin descuento":
+                        discount_amount = 0
+                    elif discount_type == "Porcentaje (%)":
+                        discount_amount = subtotal * (discount_value / 100)
                     elif discount_type == "Cantidad fija ($)":
-                        discount_amount = fixed_discount  # Descuento fijo en pesos
+                        discount_amount = min(discount_value, subtotal)  # No puede ser mayor al subtotal
                     else:
-                        discount_amount = 0  # Por seguridad
+                        discount_amount = 0
                     
                     tax_amount = (subtotal - discount_amount) * (tax / 100)
                     total_amount = subtotal - discount_amount + tax_amount
@@ -217,28 +230,25 @@ def show_new_sale():
                         st.write(f"Descuento informal: -${discount_amount:.2f}")
                     st.write(f"**Precio real a cobrar: ${total_amount:.2f}**")
                 else:
-                    if discount_type == "Porcentaje (%)" and discount > 0:
-                        st.write(f"Descuento ({discount}%): -${discount_amount:.2f}")
-                    elif discount_type == "Cantidad fija ($)" and fixed_discount > 0:
-                        st.write(f"Descuento: -${discount_amount:.2f}")
+                    if discount_type == "Porcentaje (%)" and discount_value > 0:
+                        st.write(f"Descuento ({discount_value}%): -${discount_amount:.2f}")
+                    elif discount_type == "Cantidad fija ($)" and discount_value > 0:
+                        st.write(f"Descuento fijo: -${discount_amount:.2f}")
                     if tax > 0:
                         st.write(f"Impuesto ({tax}%): +${tax_amount:.2f}")
                     st.write(f"**Total: ${total_amount:.2f}**")
                 
                 if st.form_submit_button("🎯 Completar Venta", use_container_width=True):
                     try:
-                        # Debug: Mostrar valores antes de guardar
-                        st.info(f"""
-                        🔍 **Valores a guardar:**
-                        - Tipo descuento: {discount_type}
-                        - Descuento %: {discount}
-                        - Descuento fijo: ${fixed_discount}
-                        - Descuento aplicado: ${discount_amount:.2f}
-                        - Total: ${total_amount:.2f}
-                        """)
-                        
                         # Crear la venta en la base de datos
                         sale_notes = notes if notes else ""
+                        
+                        # Agregar información del descuento a las notas
+                        if discount_type == "Porcentaje (%)" and discount_value > 0:
+                            sale_notes += f" | Descuento: {discount_value}% (${discount_amount:.2f})"
+                        elif discount_type == "Cantidad fija ($)" and discount_value > 0:
+                            sale_notes += f" | Descuento fijo: ${discount_amount:.2f}"
+                        
                         if use_real_price and real_total < subtotal:
                             sale_notes += f" | Precio real: ${real_total:.2f} (Descuento informal: ${discount_amount:.2f})"
                         
