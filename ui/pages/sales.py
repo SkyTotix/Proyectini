@@ -207,6 +207,9 @@ def show_new_sale():
                     tax_amount = (subtotal - discount_amount) * (tax / 100)
                     total_amount = subtotal - discount_amount + tax_amount
                 
+                # Debug adicional para ver los cálculos
+                st.warning(f"🔍 **Cálculos:** Subtotal: ${subtotal:.2f} | Descuento aplicado: ${discount_amount:.2f} | Total final: ${total_amount:.2f}")
+                
                 st.markdown("#### 📋 Resumen:")
                 st.write(f"Subtotal: ${subtotal:.2f}")
                 
