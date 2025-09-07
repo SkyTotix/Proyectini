@@ -110,8 +110,8 @@ def main():
         show_sales_page()
     
     elif st.session_state.page == "reports":
-        st.header("📊 Reportes y Estadísticas")
-        st.info("🚧 Esta sección está en desarrollo. Próximamente tendrás acceso a reportes detallados.")
+        from ui.pages.reports import show_reports_page
+        show_reports_page()
     
     elif st.session_state.page == "settings":
         st.header("⚙️ Configuración del Sistema")
