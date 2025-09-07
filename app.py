@@ -70,16 +70,31 @@ def main():
         "⚙️ Configuración": "settings"
     }
 
-    selected_page = st.sidebar.selectbox("Selecciona una página:", list(pages.keys()))
-    current_page = pages[selected_page]
-
     # Inicializar página en session_state si no existe
     if 'page' not in st.session_state:
-        st.session_state.page = current_page
+        st.session_state.page = "dashboard"
 
-    # Navegación entre páginas
-    if current_page != st.session_state.page:
-        st.session_state.page = current_page
+    # Obtener la página actual del session_state
+    current_page = st.session_state.page
+    
+    # Encontrar el nombre de la página actual para el selectbox
+    current_page_name = None
+    for name, key in pages.items():
+        if key == current_page:
+            current_page_name = name
+            break
+    
+    # Selectbox sincronizado con session_state
+    selected_page = st.sidebar.selectbox(
+        "Selecciona una página:", 
+        list(pages.keys()),
+        index=list(pages.keys()).index(current_page_name) if current_page_name else 0
+    )
+    
+    # Actualizar session_state si cambió la selección
+    if pages[selected_page] != st.session_state.page:
+        st.session_state.page = pages[selected_page]
+        st.rerun()
 
     # Mostrar la página seleccionada
     if st.session_state.page == "dashboard":
