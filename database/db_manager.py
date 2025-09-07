@@ -131,7 +131,7 @@ class DatabaseManager:
                 ('app_name', 'Sistema POS - Librería Callejera', 'Nombre de la aplicación'),
                 ('version', '1.0.0', 'Versión actual del sistema'),
                 ('currency', 'MXN', 'Moneda del sistema'),
-                ('tax_rate', '0.16', 'Tasa de impuestos (IVA)'),
+                ('tax_rate', '0.0', 'Tasa de impuestos (IVA) - 0% para comercio informal'),
                 ('min_stock_alert', '5', 'Stock mínimo para alertas')
             ''')
             
