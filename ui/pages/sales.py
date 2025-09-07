@@ -160,9 +160,9 @@ def show_new_sale():
                 
                 if discount_type == "Porcentaje (%)":
                     discount = st.number_input("Descuento (%)", min_value=0.0, max_value=100.0, value=0.0)
-                    discount_amount = 0  # Se calculará después
+                    fixed_discount = 0  # No se usará descuento fijo
                 else:
-                    discount_amount = st.number_input("Descuento en pesos ($)", min_value=0.0, value=0.0)
+                    fixed_discount = st.number_input("Descuento en pesos ($)", min_value=0.0, value=0.0)
                     discount = 0  # No se usará porcentaje
                 
                 # Opción de precio real de venta
@@ -197,7 +197,7 @@ def show_new_sale():
                     if discount_type == "Porcentaje (%)":
                         discount_amount = subtotal * (discount / 100)
                     else:
-                        discount_amount = discount_amount  # Ya está en pesos
+                        discount_amount = fixed_discount  # Descuento fijo en pesos
                     
                     tax_amount = (subtotal - discount_amount) * (tax / 100)
                     total_amount = subtotal - discount_amount + tax_amount
@@ -212,7 +212,7 @@ def show_new_sale():
                 else:
                     if discount_type == "Porcentaje (%)" and discount > 0:
                         st.write(f"Descuento ({discount}%): -${discount_amount:.2f}")
-                    elif discount_type == "Cantidad fija ($)" and discount_amount > 0:
+                    elif discount_type == "Cantidad fija ($)" and fixed_discount > 0:
                         st.write(f"Descuento: -${discount_amount:.2f}")
                     if tax > 0:
                         st.write(f"Impuesto ({tax}%): +${tax_amount:.2f}")
